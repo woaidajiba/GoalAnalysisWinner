@@ -21,7 +21,9 @@ import com.goalanalysis.inter.entity.MatchScoreDetail;
 
 public class HtmlJsScoreTransfer {
     public List<MatchScoreDetail> getMatchScoreDetail(String js) throws IOException, ScriptException {
-    	ScriptEngineManager manager = new ScriptEngineManager();   
+    	ScriptEngineManager manager = new ScriptEngineManager(); 
+        List<MatchScoreDetail> mtchScoreDetail=new ArrayList<MatchScoreDetail>();
+
     	MatchScoreDetailTransfer matchScoreDetailTransfer=new MatchScoreDetailTransfer();
     	ScriptEngine engine = manager.getEngineByName("javascript");   
     	String replaceString ="ShowBf();";
@@ -30,7 +32,9 @@ public class HtmlJsScoreTransfer {
        replaceString ="A[0]";
      	StringToAdd =";A[0]";
         js=js.replace(replaceString, StringToAdd);
+         try {
         engine.eval(js);
+       
         //比赛详情
         ScriptObjectMirror obj=(ScriptObjectMirror) engine.get("A");
          //联赛详情
@@ -43,7 +47,6 @@ public class HtmlJsScoreTransfer {
         for (Entry<String, Object> entry:objLeague.entrySet()) {
     	    listObjectLeague.add(entry.getValue());
         }
-         List<MatchScoreDetail> mtchScoreDetail=new ArrayList<MatchScoreDetail>();
          for(int i=0;i<listObject.size();i++) {
         	 Map<String,Object> map=(Map<String, Object>) listObject.get(i);
         	 MatchScoreDetail match= matchScoreDetailTransfer.getMatchScoreDetail(map);
@@ -55,6 +58,11 @@ public class HtmlJsScoreTransfer {
         	 }
         	 mtchScoreDetail.add(match);
          }
+        }
+        catch(Exception e) {
+        	System.out.println(js);
+        	return mtchScoreDetail;
+        }
      	//MatchScoreDetail mtchScoreDetail=(MatchScoreDetail) engine.eval(js);	
     	return mtchScoreDetail;
 }

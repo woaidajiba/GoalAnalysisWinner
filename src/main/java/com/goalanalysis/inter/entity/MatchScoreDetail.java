@@ -1,8 +1,11 @@
 package com.goalanalysis.inter.entity;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.Data;
 
 @Data
+@Document
 public class MatchScoreDetail {
     private int matchId;
     private int league;

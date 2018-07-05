@@ -12,6 +12,7 @@ import javax.script.ScriptException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.goalanalysis.inter.entity.MatchOddDetail;
@@ -21,24 +22,46 @@ import com.goalanalysis.inter.web.match.HtmlJsScoreTransfer;
 import com.goalanalysis.inter.web.match.MatchOddDetailTransfer;
 @Service
 public class ScoreGoalOddAnalysis {
+	@Autowired
+	HtmlCommon htmlcommon;
       public String getGoalOddAdvise() throws IOException, ScriptException, ParseException {
-    	   HtmlCommon htmlcommon = new HtmlCommon();
-    	   ScoreAnalysis scoreAnalysis=new ScoreAnalysis();
+     	   ScoreAnalysis scoreAnalysis=new ScoreAnalysis();
     	   MatchOddDetailTransfer matchOddDetailTransfer=new MatchOddDetailTransfer();
     	  HtmlJsScoreTransfer htmlJsScoreTransfer= new HtmlJsScoreTransfer();
-     	  Document doc=htmlcommon.getScoreTable();	  
-    	  Elements els=doc.getElementsByTag("body");
-    	  String text=els.text();
-    	   List<MatchScoreDetail> matchScoreDetail=htmlJsScoreTransfer.getMatchScoreDetail(text);
-   	   List<String> matchAnalysis=new ArrayList<String>();
+     	  Document doc=null;	  
+    	  Elements els=null;
+    	  String text="text";
+    	  List<MatchScoreDetail> matchScoreDetail=new ArrayList<MatchScoreDetail>();
+    	  try {
+    	  if (text.indexOf("var", 0)<0) {
+    		  doc=htmlcommon.getScoreTable();
+    		  els=doc.getElementsByTag("body");
+        	  text=els.text();	  
+    	      matchScoreDetail=htmlJsScoreTransfer.getMatchScoreDetail(text);
+    	  }
+    	  }
+    	  catch(Exception e ) {
+    		  doc=htmlcommon.getScoreTable();
+    		  els=doc.getElementsByTag("body");
+        	  text=els.text();	  
+    	      matchScoreDetail=htmlJsScoreTransfer.getMatchScoreDetail(text);
+    	  }
+    	 
+    	   List<String> matchAnalysis=new ArrayList<String>();
    	   String returnText="";
    	    for(int i=0;i<matchScoreDetail.size();i++) {
    	    	 if ( matchScoreDetail.get(i).getGameStatus()==-1) {
    	    		 break;
    	    	 }
    	    	 else {
+   	    		 BigDecimal calcGoal=null;
    	    	 doc=htmlcommon.getMatchAnalysis(matchScoreDetail.get(i).getMatchId());
-   	    	 BigDecimal calcGoal=scoreAnalysis.ScoreDocumentReader(doc);
+   	    	 try {
+   	    	  calcGoal=scoreAnalysis.ScoreDocumentReader(doc);
+   	    	 }
+   	    	 catch(Exception e) {
+   	    		 System.out.println(doc.toString());
+   	    	 }
    	    	 calcGoal=calcGoal.setScale(2,BigDecimal.ROUND_HALF_UP);
     	    	 Double calc=calcGoal.setScale(2,BigDecimal.ROUND_HALF_UP).subtract(calcGoal.setScale(0,BigDecimal.ROUND_FLOOR)).doubleValue();
     	    	 if (calc>0.8) {

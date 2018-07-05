@@ -24,9 +24,12 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 public class ScoreAnalysis {
       public BigDecimal ScoreDocumentReader(Document doc) throws ScriptException, ParseException {
     	  ScriptEngineManager manager = new ScriptEngineManager();   
-       	ScriptEngine engine = manager.getEngineByName("javascript");   
+       	ScriptEngine engine = manager.getEngineByName("javascript");  
+       	BigDecimal finalGoal=null;
+       	  try {
      	  Element els=doc.getElementById("teammain");
      	//  els=els.getElementById("table_v");
+     	  
      	  String js=els.getElementsByIndexEquals(1).toString();
      	  String recentDataBegin="var v_data";
      	  String homeDataBegin="var h_data";
@@ -120,7 +123,7 @@ public class ScoreAnalysis {
          if (awayGame != 0) {
         	 awayGameCalcGoal=awayGameCalcGoal.add(new BigDecimal(Double.toString(awayGameGoal))).divide(new BigDecimal(awayGame),4,BigDecimal.ROUND_HALF_UP);
          }
-         BigDecimal finalGoal=new BigDecimal("0");
+         finalGoal=new BigDecimal("0");
          
          if (awayGameCalcGoal.subtract(new BigDecimal("0")).doubleValue()>0.1&homeGameCalcGoal.subtract(new BigDecimal("0")).doubleValue()>0.1) {
             if (recentGameCalcGoal.subtract(new BigDecimal("0")).doubleValue()<0.1) {
@@ -132,4 +135,9 @@ public class ScoreAnalysis {
          }
           return finalGoal;      
       }
+      catch(Exception e) {
+    	  System.out.println(doc.toString());
+    	  return new BigDecimal("0");
+      }
+ }
 }
