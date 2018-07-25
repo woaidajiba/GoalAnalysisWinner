@@ -13,6 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,11 +26,13 @@ import com.goalanalysis.inter.analysis.ScoreAnalysis;
 import com.goalanalysis.inter.analysis.ScoreGoalOddAnalysis;
 
 @RestController
+
 public class HtmlController {
 	@Autowired
 	ScoreGoalOddAnalysis scoreGoalOddAnalysis;
 	
 	@RequestMapping("/test")
+    @Scheduled(cron="0 0 * * * ?")
    public  String test()  throws IOException, ScriptException, ParseException {
 		String advise=scoreGoalOddAnalysis.getGoalOddAdvise();
 		return advise;

@@ -9,8 +9,10 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties
  @SpringBootApplication
+ @EnableScheduling
  @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class}) 
 public class GoalAnalysisWinnerApplication {
 
